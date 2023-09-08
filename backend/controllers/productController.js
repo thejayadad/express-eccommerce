@@ -1,13 +1,14 @@
 
-const products = [
-    { id: 1, name: 'Product 1', price: 10 },
-    { id: 2, name: 'Product 2', price: 20 },
-  ];
+const Product = require('../models/Product.js')
+const {verifyToken} = require('../middleware/verifyToken.js')
 
-  function getProducts(req, res) {
-    res.json(products);
+
+exports.createProduct = async (req, res) => {
+  try {
+    const newProduct = await Product.create({ ...req.body });
+    return res.status(201).json(newProduct);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error creating product' });
   }
-
-  module.exports = {
-    getProducts,
-  };
+};

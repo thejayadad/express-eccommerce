@@ -2,7 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const productController = require('../controllers/productController.js');
+const { verifyToken } = require('../middleware/verifyToken.js');
 
-router.get('/products', productController.getProducts);
+
+router.post('/', verifyToken, productController.createProduct);
+
 
 module.exports = router;
