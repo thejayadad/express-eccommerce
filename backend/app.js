@@ -19,8 +19,10 @@ connection.once('open', () => {
   console.log("MongoDB database connection established successfully");
 })
 
-
+app.use(passport.initialize());
 app.use('/api', productRoutes);
+app.use('/api/auth', authRoutes);
+
 
 
 app.get('/', (req, res) => {

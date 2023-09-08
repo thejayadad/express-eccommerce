@@ -3,43 +3,65 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User.js');
 
-exports.register = (req, res) => {
-  const { email, username, password } = req.body;
-
-  User.findOne({ username }, (err, existingUser) => {
-    if (err) {
-      return res.status(500).json({ message: 'Error checking username availability' });
-    }
-    if (existingUser) {
-      return res.status(400).json({ message: 'Username already taken' });
-    }
-
-    bcrypt.hash(password, 10, (err, hash) => {
-      if (err) {
-        return res.status(500).json({ message: 'Error hashing password' });
+const register = async (req, res) => {
+  try {
+      const isEmpty = Object.values(req.body).some((v) => !v)
+      if(isEmpty){
+          throw new Error("Fill all fields!")
       }
 
-      const newUser = new User({ email, username, password: hash });
+      const isExisting = await User.findOne({username: req.body.username})
+      if(isExisting){
+          throw new Error("Account is already registered")
+      }
 
-      newUser.save((err) => {
-        if (err) {
-          return res.status(500).json({ message: 'Error saving user' });
-        }
-        res.status(201).json({ message: 'User registered successfully' });
-      });
-    });
-  });
-};
+      console.log(req.body)
+      const hashedPassword = await bcrypt.hash(req.body.password, 10)
+      const user = new User({...req.body, password: hashedPassword})
+      await user.save()
 
-exports.login = (req, res, next) => {
-  passport.authenticate('local', { session: false }, (err, user, info) => {
-    if (err) return next(err);
-    if (!user) return res.status(401).json({ message: 'Authentication failed' });
+      const payload = {id: user._id, username: user.username}
+      const {password, ...others} = user._doc
 
-    const token = jwt.sign({ sub: user._id }, 'your-secret-key', {
-      expiresIn: '1h',
-    });
+      const token = jwt.sign(payload, process.env.JWT_SECRET)
 
-    return res.json({ message: 'Authentication successful', token });
-  })(req, res, next);
-};
+      return res.status(201).json({token, others})
+  } catch (error) {
+      return res.status(500).json(error.message)
+  }
+}
+
+
+const login = async (req, res) => {
+  try {
+      const isEmpty = Object.values(req.body).some((v) => !v)
+      if(isEmpty){
+          throw new Error("Fill all fields!")
+      }
+
+      const user = await User.findOne({email: req.body.email})
+      if(!user){
+          throw new Error("Wrong credentials")
+      }
+
+      const comparePass = await bcrypt.compare(req.body.password, user.password)
+      if(!comparePass){
+          throw new Error("Wrong credentials")
+      }
+
+      const payload = {id: user._id, username: user.username}
+      const {password, ...others} = user._doc
+
+      const token = jwt.sign(payload, process.env.JWT_SECRET)
+
+      return res.status(200).json({token, others})
+  } catch (error) {
+      return res.status(500).json(error.message)
+  }
+}
+
+
+module.exports = {
+  register,
+  login
+}
