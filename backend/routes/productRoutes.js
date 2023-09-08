@@ -7,5 +7,5 @@ const { verifyToken } = require('../middleware/verifyToken.js');
 
 router.post('/', verifyToken, productController.createProduct);
 router.get('/', productController.getProduct)
-
+router.get('/:id', productController.getSingleProduct)
 module.exports = router;

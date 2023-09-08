@@ -22,3 +22,17 @@ exports.getProduct = async (req, res)=> {
 
   }
 }
+
+exports.getSingleProduct = async (req, res)=> {
+  try {
+    const productId = req.params.id
+    const product = await Product.findById(productId)
+    if(!product){
+      return res.status(500).json({msg: "No product with such id!"})
+  }
+  return res.status(200).json(product)
+  } catch (error) {
+    res.status(502).json({ error: 'Error getting single product' });
+
+  }
+}
