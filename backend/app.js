@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const passport = require('passport');
 const passportConfig = require('./config/passport');
 const authRoutes = require("./routes/authRoutes.js")
+const cors = require('cors');
 
 app.use(express.json());
 require('dotenv').config();
@@ -20,6 +21,21 @@ connection.once('open', () => {
 })
 
 app.use(passport.initialize());
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use('/api', productRoutes);
 app.use('/api/auth', authRoutes);
 
