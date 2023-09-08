@@ -12,3 +12,13 @@ exports.createProduct = async (req, res) => {
     res.status(500).json({ error: 'Error creating product' });
   }
 };
+
+exports.getProduct = async (req, res)=> {
+  try {
+    const getProduct = await Product.find(req.query)
+    return res.status(200).json(getProduct)
+  } catch (error) {
+    res.status(501).json({ error: 'Error getting product' });
+
+  }
+}
