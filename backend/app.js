@@ -1,9 +1,23 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000
 const productRoutes = require('./routes/productRoutes.js')
+const mongoose = require('mongoose');
+const passport = require('passport');
+const passportConfig = require('./config/passport');
+const authRoutes = require("./routes/authRoutes.js")
 
 app.use(express.json());
+require('dotenv').config();
+
+
+const uri = process.env.MONGODB_URI;
+mongoose.connect(uri, { useNewUrlParser: true }
+);
+const connection = mongoose.connection;
+connection.once('open', () => {
+  console.log("MongoDB database connection established successfully");
+})
 
 
 app.use('/api', productRoutes);
