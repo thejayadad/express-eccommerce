@@ -7,7 +7,7 @@ const passport = require('passport');
 const passportConfig = require('./config/passport');
 const authRoutes = require("./routes/authRoutes.js")
 const cors = require('cors');
-
+const cartRoutes = require('./routes/cartRoute.js')
 app.use(express.json());
 require('dotenv').config();
 
@@ -38,7 +38,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use('/api', productRoutes);
 app.use('/api/auth', authRoutes);
-
+app.use('/api/cart', cartRoutes);
 
 
 app.get('/', (req, res) => {
