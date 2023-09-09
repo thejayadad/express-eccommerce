@@ -1,5 +1,7 @@
+'use client'
+import Navbar from '../../components/Navbar'
+import { CartProvider } from '../../ctx/cartContext'
 import './globals.css'
-
 
 
 export const metadata = {
@@ -10,7 +12,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <CartProvider>
+          <Navbar />
+        {children}
+
+        </CartProvider>
+      </body>
     </html>
   )
 }

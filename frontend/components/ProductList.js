@@ -1,7 +1,7 @@
 'use client'
-
 import { useEffect, useState } from 'react';
 import { getAllProducts } from '../utils/api.js';
+import ProductItem from '../components/ProductItem.js'; // Import the ProductItem component
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -25,14 +25,12 @@ const ProductList = () => {
       <ul>
         {products.map((product) => (
           <li key={product._id}>
-            <h3>{product.title}</h3>
-            <p>{product.desc}</p>
-            <p>Price: ${product.price}</p>
+            <ProductItem product={product} />
           </li>
         ))}
       </ul>
     </div>
-  );
+  )
 };
 
 export default ProductList;
